@@ -21,7 +21,7 @@ export const RegisterView: React.FC<RegisterViewProps> = ({
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [age, setAge] = useState<number>(28);
+  const [age, setAge] = useState<number | ''>(28);
   const [ballRating, setBallRating] = useState<BallRating>('s2');
   const [phone, setPhone] = useState('010-5521-8840');
   const [avatarUrl, setAvatarUrl] = useState(
@@ -351,7 +351,8 @@ export const RegisterView: React.FC<RegisterViewProps> = ({
           <input
             type="number"
             value={age}
-            onChange={(e) => setAge(Number(e.target.value))}
+            onChange={(e) => setAge(e.target.value === '' ? '' : Number(e.target.value))}
+            placeholder="나이 입력"
             className="w-full sm:w-1/2 px-3 py-2 rounded-lg bg-[#11131a] border border-white/10 text-xs text-white focus:outline-none focus:border-[#f5c200]"
           />
         </div>

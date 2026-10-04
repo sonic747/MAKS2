@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, MessageSquare } from 'lucide-react';
 import { FeedPost, PostComment, SquashMember } from '../types';
 
@@ -18,6 +18,13 @@ export const CommentsDrawer: React.FC<CommentsDrawerProps> = ({
   onAddComment,
 }) => {
   const [commentText, setCommentText] = useState('');
+  const commentsEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen && post?.comments?.length) {
+      commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [post?.comments?.length, isOpen]);
 
   if (!isOpen || !post) return null;
 
@@ -94,6 +101,7 @@ export const CommentsDrawer: React.FC<CommentsDrawerProps> = ({
               아직 작성된 댓글이 없습니다. 첫 번째 댓글을 남겨보세요!
             </div>
           )}
+          <div ref={commentsEndRef} />
         </div>
 
         {/* Input Bar */}

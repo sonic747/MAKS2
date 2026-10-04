@@ -483,7 +483,7 @@ export default function App() {
   };
 
   const handleAddComment = async (postId: string, text: string) => {
-    const target = posts.find((p) => p.id === postId);
+    const target = posts.find((p) => p.id === postId) || (activeCommentPost?.id === postId ? activeCommentPost : null);
     if (!target) return;
     const author = currentUser || selectedMember;
     const newComment = {
@@ -495,14 +495,19 @@ export default function App() {
     };
     const updated: FeedPost = {
       ...target,
-      commentsCount: target.commentsCount + 1,
-      comments: [...target.comments, newComment],
+      commentsCount: (target.comments?.length || 0) + 1,
+      comments: [...(target.comments || []), newComment],
     };
+
+    // 1. Immediately update React posts state
+    setPosts((prev) => prev.map((p) => (p.id === postId ? updated : p)));
+    // 2. Immediately update open drawer state so it appears without reload
+    setActiveCommentPost(updated);
+
     try {
       await savePostToFirestore(updated);
     } catch (err) {
-      console.error('Failed to add comment', err);
-      setPosts((prev) => prev.map((p) => (p.id === postId ? updated : p)));
+      console.error('Failed to add comment to Firestore', err);
     }
   };
 
@@ -846,10 +851,10 @@ export default function App() {
       {activeCommentPost && (
         <CommentsDrawer
           isOpen={true}
-          post={activeCommentPost}
+          post={posts.find((p) => p.id === activeCommentPost.id) || activeCommentPost}
           currentUser={currentUser || selectedMember}
           onClose={() => setActiveCommentPost(null)}
-          onAddComment={(postId, commentText, author) => handleAddComment(postId, commentText)}
+          onAddComment={(postId, commentText) => handleAddComment(postId, commentText)}
         />
       )}
 
@@ -858,6 +863,7 @@ export default function App() {
           isOpen={isCheerModalOpen}
           targetMember={selectedMember}
           allMembers={members}
+          currentUser={currentUser}
           onClose={() => setIsCheerModalOpen(false)}
           onAddCheer={(targetMemberId, authorName, text) => handleAddCheer(targetMemberId, authorName, text)}
         />

@@ -33,7 +33,7 @@ export const AuthGateModal: React.FC<AuthGateModalProps> = ({
   const [regUsername, setRegUsername] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regName, setRegName] = useState('');
-  const [regAge, setRegAge] = useState(29);
+  const [regAge, setRegAge] = useState<number | ''>(29);
   const [regBallRating, setRegBallRating] = useState<BallRating>('s2');
   const [regPhone, setRegPhone] = useState('010-5521-8840');
   const [regAvatarUrl, setRegAvatarUrl] = useState(
@@ -190,7 +190,7 @@ export const AuthGateModal: React.FC<AuthGateModalProps> = ({
       role: regBallRating === 'elite' ? 'coach' : 'member',
       roleLabel: config.roleLabel,
       tenure: config.tenure,
-      age: regAge,
+      age: regAge === '' ? 25 : Number(regAge),
       ballRating: regBallRating,
       ratingLabel: config.label,
       ratingSub: config.sub,
@@ -341,7 +341,8 @@ export const AuthGateModal: React.FC<AuthGateModalProps> = ({
                     <input
                       type="number"
                       value={regAge}
-                      onChange={(e) => setRegAge(Number(e.target.value))}
+                      onChange={(e) => setRegAge(e.target.value === '' ? '' : Number(e.target.value))}
+                      placeholder="나이 입력"
                       className="w-full px-3 py-2 rounded-lg bg-[#0c0e15] border border-white/10 text-xs text-white focus:outline-none focus:border-[#f5c200]"
                     />
                   </div>
